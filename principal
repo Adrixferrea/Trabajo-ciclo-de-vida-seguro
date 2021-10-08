@@ -1,26 +1,4 @@
-package trabajo.ciclo.de.vida;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Scanner;
-
-/**
- *
- * @author Adrián Martín Moro
- */
-public class TrabajoCicloDeVida {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws IOException {
-        int opcion;
-        boolean salir = false;
-        Scanner sn = new Scanner(System.in);
-        Scanner user = new Scanner(System.in);
-        Scanner password = new Scanner(System.in);
-        Operaciones op = new Operaciones();
-
+public class TrabajoCicloDeVida {t opcion;
         System.out.println("Usuario: ");
         String usuario = user.nextLine();
         System.out.println("Contraseña: ");
@@ -65,13 +43,4 @@ public class TrabajoCicloDeVida {
                         salir = true;
                         break;
                     default:
-                        System.out.println("Solo números entre 1 y 4");
-                }
-
-            }
-        }else{
-            System.out.println("Usuario o contraseña incorrecta");
-        }
-
-    }
-}
+                 
