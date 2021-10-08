@@ -1,92 +1,304 @@
 package trabajo.ciclo.de.vida;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
  *
  * @author Adrián Martín Moro
  */
-public class TrabajoCicloDeVida {
+public class Operaciones {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws IOException {
-        int opcion;
-        boolean salir = false;
-        Scanner sn = new Scanner(System.in);
-        Scanner user = new Scanner(System.in);
-        Scanner password = new Scanner(System.in);
-        Operaciones op = new Operaciones();
+    private String[] partes = null;//sirve para desglosar el nombre de usuario la contraseña y el tipo de rol de cada usuario
+    private static final String ruta = "Usuarios.txt";//ruta donde se van a encontrar los usuarios
 
-        System.out.println("Usuario: ");
-        String usuario = user.nextLine();
-        System.out.println("Contraseña: ");
-        String contraseña = password.nextLine();
+    public boolean leerUsuarios(String user, String password) {
+        File archivo = null;
+        FileReader fr = null;
+        BufferedReader br = null;
 
-        if (op.leerUsuarios(usuario, contraseña) == true) {
-            while (!salir) {
-                int i = op.ComprobarRol();
-                op.ComprobarRolMenu(i);
+        boolean a = false;
 
-                System.out.println("6. Salir");
+        try {
+            // Apertura del fichero y creacion de BufferedReader para poder
+            // hacer una lectura comoda (disponer del metodo readLine()).
+            archivo = new File(ruta);
+            fr = new FileReader(archivo);
+            br = new BufferedReader(fr);
 
-                System.out.println("Escribe una de las opciones");
-                opcion = sn.nextInt();
-
-                switch (opcion) {
-                    case 1://agrego a un amigo
-                        //1=admin 2=gestor 3=ayudante
-                        if(op.ComprobarRol() == 1 || op.ComprobarRol() == 2){//compruebo los roles
-                           op.agregarAmigo(); 
-                        }else{
-                            System.out.println("No tienes permisos para realizar esta acción");
-                        }
-                        
-                        break;
-                    case 2://muestro los amigos
-                        if(op.ComprobarRol() == 1 || op.ComprobarRol() == 2 || op.ComprobarRol() == 3){
-                        op.leerAmigos();
-                        }else{
-                            System.out.println("No tienes permisos para realizar esta acción");
-                        }
-                        
-                        break;
-                    case 3://agrego a un nuevo usuario
-                        if (op.ComprobarRol() == 1) {
-                            op.agregarUsuario();
-                        } else {
-                            System.out.println("No tienes permisos para realizar esta acción");
-                            break;
-                        }
-                        break;
-                    case 4://modifico a un amigo
-                        if(op.ComprobarRol() == 1 || op.ComprobarRol() == 2){
-                            op.modificarAmigo();
-                        }else{
-                            System.out.println("No tienes permisos para realizar esta acción");
-                        }
-                        break;
-                    case 5://elimino a un amigo
-                        if(op.ComprobarRol() == 1){
-                            op.eliminarAmigo();
-                        }else{
-                            System.out.println("No tienes permisos para realizar esta acción");
-                        }
-                        break;
-                    case 6://salir
-                        salir = true;
-                        break;
-                    default:
-                        System.out.println("Solo números entre 1 y 6");
+            // Lectura del fichero
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                partes = linea.split(";");
+                if (partes[0].equals(user) && partes[1].equals(password)) {
+                    a = true;
                 }
-
             }
-        }else{
-            System.out.println("Usuario o contraseña incorrecta");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // En el finally cerramos el fichero, para asegurarnos
+            // que se cierra tanto si todo va bien como si salta 
+            // una excepcion.
+            try {
+                if (null != fr) {
+                    fr.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        return a;
+    }
+
+    public void ComprobarRolMenu(int i) {//en este metodo segun el rol de cada usuario se mostrara un menú u otro
+        System.out.println("llego");
+        if (i == 1) {
+            System.out.println("1.Agregar amigo");
+            System.out.println("2.Ver amigos");
+            System.out.println("3.Agregar usuario");
+            System.out.println("4.Modificar amigo");
+            System.out.println("5.Eliminar amigo");
+        } else if (i == 2) {
+            System.out.println("1.Agregar amigo");
+            System.out.println("2.Ver amigos");
+            System.out.println("4.Modificar amigo");
+
+        } else if (i == 3) {
+            System.out.println("2.Ver amigos");
+
         }
 
     }
+
+    public int ComprobarRol() {//comprueba el rol de cada usuario
+
+        int a = 0;
+        if (partes[2].equals("1")) {
+            a = 1;//admin
+        } else if (partes[2].equals("2")) {
+            a = 2;//gestor
+        } else if (partes[2].equals("3")) {
+            a = 3;//ayudante
+        }
+        return a;
+    }
+
+//    public void AgregarAmigo() throws IOException {//agrega un amigo a tu agenda
+//        String ruta = partes[0] + ".txt";
+//        File archivo = new File(ruta);
+//        BufferedWriter bw;
+//        Scanner sn = new Scanner(System.in);
+//
+//        System.out.println("Dime el nombre de tu amigo: ");
+//        String nombre = sn.nextLine();
+//        if (archivo.exists()) {
+//            bw = new BufferedWriter(new FileWriter(archivo));
+//            bw.write(nombre);
+//            System.out.println("Amigo añadido con exito");
+//        } else {
+//            bw = new BufferedWriter(new FileWriter(archivo));
+//            bw.write(nombre);
+//            System.out.println("Amigo añadido con exito");
+//        }
+//        bw.close();
+//    }
+    public void agregarAmigo() {
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+        Scanner sn = new Scanner(System.in);
+
+        System.out.println("Dime el nombre de tu amigo: ");
+        String nombre = sn.nextLine();
+
+        try {
+
+            File file = new File(partes[0] + ".txt");
+            // Si el archivo no existe, se crea!
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            // flag true, indica adjuntar información al archivo.
+            fw = new FileWriter(file.getAbsoluteFile(), true);
+            bw = new BufferedWriter(fw);
+            bw.write(nombre + "\n");
+            System.out.println("información agregada!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                //Cierra instancias de FileWriter y BufferedWriter
+                if (bw != null) {
+                    bw.close();
+                }
+                if (fw != null) {
+                    fw.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    public void leerAmigos() {//muestra los amigos que tienes añadidos
+        File archivo = null;
+        FileReader fr = null;
+        BufferedReader br = null;
+
+        boolean a = false;
+
+        try {
+            // Apertura del fichero y creacion de BufferedReader para poder
+            // hacer una lectura comoda (disponer del metodo readLine()).
+            archivo = new File(partes[0] + ".txt");
+            fr = new FileReader(archivo);
+            br = new BufferedReader(fr);
+
+            // Lectura del fichero
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                System.out.println(linea);
+
+            }
+        } catch (Exception e) {
+            System.out.println("No tienes amigos");
+        } finally {
+            // En el finally cerramos el fichero, para asegurarnos
+            // que se cierra tanto si todo va bien como si salta 
+            // una excepcion.
+            try {
+                if (null != fr) {
+                    fr.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+
+    public void agregarUsuario() {
+        BufferedWriter bw = null;
+        FileWriter fw = null;
+        Scanner user = new Scanner(System.in);
+        Scanner password = new Scanner(System.in);
+        Scanner rol = new Scanner(System.in);
+        String nombre;
+        String contraseña;
+        int Rol;
+        System.out.println("Dime el nombre del usuario: ");
+        nombre = user.nextLine();
+
+        System.out.println("Dime la contraseña del usuario: ");
+        contraseña = password.nextLine();
+        System.out.println("Dime el rol del usuario: ");
+        System.out.println("1.Admin");
+        System.out.println("2.Gerente");
+        System.out.println("3.Ayudante");
+        Rol = rol.nextInt();
+
+        try {
+
+            File file = new File("Usuarios.txt");
+            // Si el archivo no existe, se crea!
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            // flag true, indica adjuntar información al archivo.
+            fw = new FileWriter(file.getAbsoluteFile(), true);
+            bw = new BufferedWriter(fw);
+            bw.write("\n");
+            bw.write(nombre + ";" + contraseña + ";" + Rol + "\n");
+            System.out.println("información agregada!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                //Cierra instancias de FileWriter y BufferedWriter
+                if (bw != null) {
+                    bw.close();
+                }
+                if (fw != null) {
+                    fw.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+        }
+    }
+
+    public void modificarAmigo() throws IOException {//modifica un amigo de tu agenda
+        Scanner sn = new Scanner(System.in);
+        Scanner sn2 = new Scanner(System.in);
+
+
+        eliminarAmigo();
+        agregarAmigo();
+        
+     
+    }      
+
+
+    public void eliminarAmigo() {
+
+        Scanner sn = new Scanner(System.in);
+
+        System.out.println("Dime el nombre de tu amigo: ");
+        String nombre = sn.nextLine();
+        try {
+ 
+        File inFile = new File(partes[0]+".txt");
+ 
+        if (!inFile.isFile()) {
+            System.out.println("no hay file");
+            return;
+        }
+ 
+        //Construct the new file that will later be renamed to the original filename.
+        File tempFile = new File(inFile.getAbsolutePath() + ".tmp");
+ 
+        BufferedReader br = new BufferedReader(new FileReader(partes[0]+".txt"));
+        PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+ 
+        String line = null;
+ 
+        //Read from the original file and write to the new
+        //unless content matches data to be removed.
+        while ((line = br.readLine()) != null) {
+ 
+            if (!line.trim().equals(nombre)) {
+ 
+                pw.println(line);
+                pw.flush();
+            }
+        }
+        pw.close();
+        br.close();
+ 
+        //Delete the original file
+        if (!inFile.delete()) {
+            System.out.println("Could not delete file");
+            return;
+        }
+ 
+        //Rename the new file to the filename the original file had.
+        if (!tempFile.renameTo(inFile)){
+            System.out.println("Could not rename file");
+ 
+        }
+    } catch (FileNotFoundException ex) {
+        ex.printStackTrace();
+    } catch (IOException ex) {
+        ex.printStackTrace();
+    }
+    }
+
 }
