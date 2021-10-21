@@ -214,7 +214,6 @@ public class Operaciones {
             // flag true, indica adjuntar información al archivo.
             fw = new FileWriter(file.getAbsoluteFile(), true);
             bw = new BufferedWriter(fw);
-            bw.write("\n");
             bw.write(nombre + ";" + contraseña + ";" + Rol + "\n");
             System.out.println("información agregada!");
         } catch (IOException e) {
